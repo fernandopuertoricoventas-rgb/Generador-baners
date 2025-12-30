@@ -2,6 +2,7 @@ const http = require("http");
 const url = require("url");
 const fs = require("fs");
 const { chromium } = require("playwright");
+
 function escapeHtml(s) {
   return String(s || "")
     .replaceAll("&", "&amp;")
@@ -33,7 +34,7 @@ const server = http.createServer((req, res) => {
     return res.end("Tu generador de banners está funcionando 🚀");
   }
 
-  // Endpoint JSON (lo que ya tenías)
+  // Endpoint JSON
   if (parsedUrl.pathname === "/render") {
     const template = parsedUrl.query.template || "offer_direct";
     const headline = parsedUrl.query.headline || "BLACK FRIDAY OFERTA";
@@ -50,7 +51,7 @@ const server = http.createServer((req, res) => {
     return res.end(JSON.stringify(output, null, 2));
   }
 
-  // NUEVO: Preview HTML del banner
+  // Preview HTML del banner
   if (parsedUrl.pathname === "/preview") {
     const headline = parsedUrl.query.headline || "BLACK FRIDAY OFERTA";
     const sub_badge = parsedUrl.query.sub_badge || "PACK X2";
@@ -61,13 +62,14 @@ const server = http.createServer((req, res) => {
       parsedUrl.query.b3 || "BRILLO"
     ];
 
-    // Lee la plantilla desde el repo
     const html = fs.readFileSync("./offer-direct.html", "utf8");
     const filled = fillTemplate(html, { headline, sub_badge, cta, benefits });
 
     res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
     return res.end(filled);
-      // NUEVO: Generar PNG (banner final)
+  }
+
+  // Generar PNG (banner final)
   if (parsedUrl.pathname === "/png") {
     (async () => {
       try {
@@ -106,8 +108,6 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  }
-/png
   // Si no existe la ruta
   res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
   res.end("Ruta no encontrada ❌");
