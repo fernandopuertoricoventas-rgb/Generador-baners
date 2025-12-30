@@ -107,7 +107,7 @@ const server = http.createServer((req, res) => {
   }
 
   }
-
+/png
   // Si no existe la ruta
   res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
   res.end("Ruta no encontrada ❌");
