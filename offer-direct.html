@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body { margin:0; }
+    .canvas {
+      width:1080px; height:1350px; position:relative;
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at 30% 20%, #333, #050505);
+      color:#fff;
+      overflow:hidden;
+    }
+    .headline {
+      position:absolute; top:70px; left:70px; right:70px;
+      font-weight:900; font-size:84px; letter-spacing:1px;
+      text-transform:uppercase;
+    }
+    .subBadge {
+      position:absolute; top:190px; left:70px;
+      padding:14px 22px; border-radius:999px;
+      background:#d4af37; color:#111; font-weight:900;
+      text-transform:uppercase; font-size:28px;
+    }
+    .product {
+      position:absolute; top:300px; left:140px; right:140px; height:720px;
+      display:flex; justify-content:center; align-items:center;
+    }
+    .product .box {
+      width:720px; height:720px;
+      border-radius:28px;
+      background: rgba(255,255,255,.08);
+      display:flex; align-items:center; justify-content:center;
+      font-weight:800; font-size:34px;
+      text-align:center;
+      padding:40px;
+    }
+    .benefits {
+      position:absolute; bottom:210px; left:70px; right:70px;
+      display:flex; gap:18px; justify-content:space-between;
+    }
+    .benefit {
+      flex:1; padding:18px 16px; border-radius:18px;
+      background: rgba(255,255,255,.08);
+      text-align:center; font-weight:900;
+      text-transform:uppercase; font-size:34px;
+    }
+    .cta {
+      position:absolute; bottom:90px; left:70px; right:70px;
+      height:96px; border-radius:22px;
+      background:#ffffff; color:#111;
+      display:flex; align-items:center; justify-content:center;
+      font-weight:900; font-size:46px;
+      text-transform:uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas">
+    <div class="headline">{{headline}}</div>
+    <div class="subBadge">{{sub_badge}}</div>
+
+    <div class="product">
+      <div class="box">Aquí irá la imagen del producto más adelante</div>
+    </div>
+
+    <div class="benefits">
+      <div class="benefit">{{benefit_1}}</div>
+      <div class="benefit">{{benefit_2}}</div>
+      <div class="benefit">{{benefit_3}}</div>
+    </div>
+
+    <div class="cta">{{cta}}</div>
+  </div>
+</body>
+</html>
