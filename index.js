@@ -13,77 +13,108 @@ function escapeHtml(s) {
 }
 
 function fillTemplate(html, data) {
+  // Oferta directa
   const benefits = (data.benefits || []).slice(0, 3);
   while (benefits.length < 3) benefits.push("");
 
+  // Autoridad proofs
+  const proofs = (data.proofs || []).slice(0, 3);
+  while (proofs.length < 3) proofs.push({ value: "", label: "" });
+
   return html
+    // comunes
     .replaceAll("{{headline}}", escapeHtml(data.headline))
+    .replaceAll("{{cta}}", escapeHtml(data.cta))
+
+    // offer-direct.html
     .replaceAll("{{sub_badge}}", escapeHtml(data.sub_badge))
     .replaceAll("{{benefit_1}}", escapeHtml(benefits[0]))
     .replaceAll("{{benefit_2}}", escapeHtml(benefits[1]))
     .replaceAll("{{benefit_3}}", escapeHtml(benefits[2]))
-    .replaceAll("{{cta}}", escapeHtml(data.cta));
+
+    // authority.html
+    .replaceAll("{{brand}}", escapeHtml(data.brand))
+    .replaceAll("{{authority_badge}}", escapeHtml(data.authority_badge))
+    .replaceAll("{{proof_1}}", escapeHtml(proofs[0].value))
+    .replaceAll("{{proof_1_label}}", escapeHtml(proofs[0].label))
+    .replaceAll("{{proof_2}}", escapeHtml(proofs[1].value))
+    .replaceAll("{{proof_2_label}}", escapeHtml(proofs[1].label))
+    .replaceAll("{{proof_3}}", escapeHtml(proofs[2].value))
+    .replaceAll("{{proof_3_label}}", escapeHtml(proofs[2].label))
+    .replaceAll("{{footer_left}}", escapeHtml(data.footer_left))
+    .replaceAll("{{footer_right}}", escapeHtml(data.footer_right));
+}
+
+function getTemplateAndData(parsedUrl) {
+  const q = parsedUrl.query || {};
+  const template = (q.template || "offer_direct").toLowerCase();
+
+  if (template === "authority") {
+    return {
+      file: "./authority.html",
+      data: {
+        headline: q.headline || "MÁS CLIENTES EN 14 DÍAS",
+        cta: q.cta || "AGENDA UNA LLAMADA",
+        brand: q.brand || "TU MARCA",
+        authority_badge: q.badge || "CASOS REALES",
+        proofs: [
+          { value: q.p1 || "+1,240", label: q.p1l || "VENTAS" },
+          { value: q.p2 || "4.9★", label: q.p2l || "RESEÑAS" },
+          { value: q.p3 || "30D", label: q.p3l || "GARANTÍA" }
+        ],
+        footer_left: q.fl || "DISTRIBUIDOR AUTORIZADO",
+        footer_right: q.fr || "SOPORTE 24/7"
+      }
+    };
+  }
+
+  // default: offer_direct
+  return {
+    file: "./offer-direct.html",
+    data: {
+      headline: q.headline || "BLACK FRIDAY OFERTA",
+      sub_badge: q.sub_badge || "PACK X2",
+      cta: q.cta || "COMPRAR AHORA",
+      benefits: [
+        q.b1 || "REPARA",
+        q.b2 || "NUTRE",
+        q.b3 || "BRILLO"
+      ],
+      // campos de autoridad vacíos para no romper reemplazos
+      brand: "",
+      authority_badge: "",
+      proofs: [{ value: "", label: "" }, { value: "", label: "" }, { value: "", label: "" }],
+      footer_left: "",
+      footer_right: ""
+    }
+  };
 }
 
 const server = http.createServer((req, res) => {
   const parsedUrl = url.parse(req.url, true);
 
-  // Página principal
   if (parsedUrl.pathname === "/") {
     res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
     return res.end("Tu generador de banners está funcionando 🚀");
   }
 
-  // Endpoint JSON
-  if (parsedUrl.pathname === "/render") {
-    const template = parsedUrl.query.template || "offer_direct";
-    const headline = parsedUrl.query.headline || "BLACK FRIDAY OFERTA";
-    const cta = parsedUrl.query.cta || "COMPRAR AHORA";
-
-    const output = {
-      template,
-      content: { headline, cta },
-      status: "ok",
-      message: "Endpoint /render funcionando ✅"
-    };
-
-    res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
-    return res.end(JSON.stringify(output, null, 2));
-  }
-
-  // Preview HTML del banner
+  // Preview HTML (elige template por query)
   if (parsedUrl.pathname === "/preview") {
-    const headline = parsedUrl.query.headline || "BLACK FRIDAY OFERTA";
-    const sub_badge = parsedUrl.query.sub_badge || "PACK X2";
-    const cta = parsedUrl.query.cta || "COMPRAR AHORA";
-    const benefits = [
-      parsedUrl.query.b1 || "REPARA",
-      parsedUrl.query.b2 || "NUTRE",
-      parsedUrl.query.b3 || "BRILLO"
-    ];
-
-    const html = fs.readFileSync("./offer-direct.html", "utf8");
-    const filled = fillTemplate(html, { headline, sub_badge, cta, benefits });
+    const { file, data } = getTemplateAndData(parsedUrl);
+    const html = fs.readFileSync(file, "utf8");
+    const filled = fillTemplate(html, data);
 
     res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
     return res.end(filled);
   }
 
-  // Generar PNG (banner final)
+  // PNG (elige template por query)
   if (parsedUrl.pathname === "/png") {
     (async () => {
       try {
-        const headline = parsedUrl.query.headline || "BLACK FRIDAY OFERTA";
-        const sub_badge = parsedUrl.query.sub_badge || "PACK X2";
-        const cta = parsedUrl.query.cta || "COMPRAR AHORA";
-        const benefits = [
-          parsedUrl.query.b1 || "REPARA",
-          parsedUrl.query.b2 || "NUTRE",
-          parsedUrl.query.b3 || "BRILLO"
-        ];
-
-        const html = fs.readFileSync("./offer-direct.html", "utf8");
-        const filled = fillTemplate(html, { headline, sub_badge, cta, benefits });
+        const { file, data } = getTemplateAndData(parsedUrl);
+        const html = fs.readFileSync(file, "utf8");
+        const filled = fillTemplate(html, data);
 
         const browser = await chromium.launch();
         const page = await browser.newPage({ viewport: { width: 1080, height: 1350 } });
@@ -104,17 +135,18 @@ const server = http.createServer((req, res) => {
         return res.end("Error generando PNG: " + err.message);
       }
     })();
-
     return;
   }
 
-  // Si no existe la ruta
+  // Mantengo tu /render si aún lo necesitas (opcional)
+  if (parsedUrl.pathname === "/render") {
+    res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+    return res.end(JSON.stringify({ ok: true, message: "Usa /preview o /png" }, null, 2));
+  }
+
   res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
   res.end("Ruta no encontrada ❌");
 });
 
 const PORT = process.env.PORT || 3000;
-
-server.listen(PORT, () => {
-  console.log("Servidor corriendo en el puerto " + PORT);
-});
+server.listen(PORT, () => console.log("Servidor corriendo en el puerto " + PORT));
