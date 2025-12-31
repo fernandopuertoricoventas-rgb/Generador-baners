@@ -1,203 +1,154 @@
 <!doctype html>
-<html>
+<html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Generador de Banners</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; background:#0b0b0f; color:#fff; }
-    .wrap { max-width: 980px; margin: 0 auto; padding: 28px 18px 60px; }
-    h1 { margin: 10px 0 8px; font-size: 28px; }
-    p { margin: 0 0 18px; opacity: .85; }
-    .card { background: rgba(255,255,255,.06); border-radius: 16px; padding: 18px; margin-top: 16px; }
-    label { display:block; font-size: 13px; opacity:.9; margin: 14px 0 6px; }
-    input, select { width: 100%; padding: 12px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,.14); background: rgba(0,0,0,.35); color:#fff; }
-    .row { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .btns { display:flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
-    button { padding: 12px 16px; border-radius: 12px; border:0; font-weight: 800; cursor:pointer; }
-    .primary { background:#22c55e; color:#0b0b0f; }
-    .ghost { background: rgba(255,255,255,.10); color:#fff; }
-    .hint { font-size: 12px; opacity:.8; margin-top: 10px; }
-    .hidden { display:none; }
+    body{
+      margin:0;
+      font-family: Inter, system-ui, Arial, sans-serif;
+      background:#0b0b0f;
+      color:#fff;
+    }
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:40px 20px;
+    }
+    h1{
+      font-size:38px;
+      margin-bottom:10px;
+    }
+    p{
+      opacity:.8;
+      margin-bottom:30px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 380px 1fr;
+      gap:30px;
+    }
+    .card{
+      background:#111827;
+      border-radius:16px;
+      padding:20px;
+    }
+    label{
+      display:block;
+      font-size:14px;
+      margin-bottom:6px;
+      opacity:.9;
+    }
+    input, select{
+      width:100%;
+      padding:12px;
+      border-radius:10px;
+      border:none;
+      margin-bottom:14px;
+      font-size:15px;
+    }
+    button{
+      width:100%;
+      padding:14px;
+      border:none;
+      border-radius:12px;
+      background:#22c55e;
+      color:#0b0b0f;
+      font-weight:900;
+      font-size:16px;
+      cursor:pointer;
+    }
+    iframe{
+      width:100%;
+      height:700px;
+      border-radius:16px;
+      border:none;
+      background:#000;
+    }
+    .actions{
+      display:flex;
+      gap:10px;
+      margin-top:10px;
+    }
+    .actions a{
+      flex:1;
+      text-align:center;
+      padding:12px;
+      border-radius:12px;
+      background:#1f2937;
+      color:#fff;
+      text-decoration:none;
+      font-weight:700;
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>Generador de banners (MVP)</h1>
-    <p>Elige una plantilla, escribe los textos y genera el PNG.</p>
+    <h1>Generador de Banners IA</h1>
+    <p>Crea banners listos para Meta Ads y landing pages en segundos.</p>
 
-    <div class="card">
-      <label>Plantilla</label>
-      <select id="template">
-        <option value="offer_direct">Oferta directa</option>
-        <option value="authority">Autoridad</option>
-      </select>
+    <div class="grid">
+      <!-- FORM -->
+      <div class="card">
+        <label>Tipo de banner</label>
+        <select id="template">
+          <option value="offer_direct">Oferta directa</option>
+          <option value="authority">Autoridad</option>
+        </select>
 
-      <div class="row">
-        <div>
-          <label>Headline</label>
-          <input id="headline" placeholder="Ej: OFERTA HOY" />
-        </div>
-        <div>
-          <label>CTA</label>
-          <input id="cta" placeholder="Ej: COMPRAR AHORA" />
-        </div>
+        <label>Headline</label>
+        <input id="headline" value="BLACK FRIDAY OFERTA">
+
+        <label>Sub badge / Sello</label>
+        <input id="sub_badge" value="PACK X2">
+
+        <label>Beneficio / Prueba 1</label>
+        <input id="b1" value="ENVÍO GRATIS">
+
+        <label>Beneficio / Prueba 2</label>
+        <input id="b2" value="GARANTÍA">
+
+        <label>Beneficio / Prueba 3</label>
+        <input id="b3" value="CALIDAD PREMIUM">
+
+        <label>CTA</label>
+        <input id="cta" value="COMPRAR AHORA">
+
+        <button onclick="generate()">Generar banner</button>
       </div>
 
-      <!-- Oferta directa -->
-      <div id="offerFields">
-        <label>Sub badge</label>
-        <input id="sub_badge" placeholder="Ej: PACK X2" />
-
-        <div class="row">
-          <div>
-            <label>Beneficio 1</label>
-            <input id="b1" placeholder="Ej: ENVÍO GRATIS" />
-          </div>
-          <div>
-            <label>Beneficio 2</label>
-            <input id="b2" placeholder="Ej: GARANTÍA" />
-          </div>
-        </div>
-
-        <label>Beneficio 3</label>
-        <input id="b3" placeholder="Ej: CALIDAD" />
-      </div>
-
-      <!-- Autoridad -->
-      <div id="authFields" class="hidden">
-        <div class="row">
-          <div>
-            <label>Brand</label>
-            <input id="brand" placeholder="Ej: TU MARCA" />
-          </div>
-          <div>
-            <label>Badge</label>
-            <input id="badge" placeholder="Ej: CASOS REALES" />
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label>Proof 1 (valor)</label>
-            <input id="p1" placeholder="Ej: +10,000" />
-          </div>
-          <div>
-            <label>Proof 1 (label)</label>
-            <input id="p1l" placeholder="Ej: CLIENTES" />
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label>Proof 2 (valor)</label>
-            <input id="p2" placeholder="Ej: 4.9★" />
-          </div>
-          <div>
-            <label>Proof 2 (label)</label>
-            <input id="p2l" placeholder="Ej: RESEÑAS" />
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label>Proof 3 (valor)</label>
-            <input id="p3" placeholder="Ej: 30D" />
-          </div>
-          <div>
-            <label>Proof 3 (label)</label>
-            <input id="p3l" placeholder="Ej: GARANTÍA" />
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label>Footer left</label>
-            <input id="fl" placeholder="Ej: DISTRIBUIDOR AUTORIZADO" />
-          </div>
-          <div>
-            <label>Footer right</label>
-            <input id="fr" placeholder="Ej: ENVÍO RÁPIDO" />
-          </div>
+      <!-- PREVIEW -->
+      <div class="card">
+        <iframe id="preview"></iframe>
+        <div class="actions">
+          <a id="download" href="#" target="_blank">Descargar PNG</a>
+          <a id="open" href="#" target="_blank">Abrir preview</a>
         </div>
       </div>
-
-      <div class="btns">
-        <button class="primary" id="btnPng">Generar PNG</button>
-        <button class="ghost" id="btnPreview">Ver Preview</button>
-      </div>
-
-      <div class="hint">Tip: en Render free, la primera imagen puede tardar 30–60s si el servicio está dormido.</div>
     </div>
   </div>
 
-  <script>
-    const $ = (id) => document.getElementById(id);
+<script>
+function generate(){
+  const t = document.getElementById("template").value;
+  const h = encodeURIComponent(document.getElementById("headline").value);
+  const sb = encodeURIComponent(document.getElementById("sub_badge").value);
+  const b1 = encodeURIComponent(document.getElementById("b1").value);
+  const b2 = encodeURIComponent(document.getElementById("b2").value);
+  const b3 = encodeURIComponent(document.getElementById("b3").value);
+  const cta = encodeURIComponent(document.getElementById("cta").value);
 
-    function toggleFields() {
-      const t = $("template").value;
-      $("offerFields").classList.toggle("hidden", t !== "offer_direct");
-      $("authFields").classList.toggle("hidden", t !== "authority");
-    }
+  const previewUrl =
+    `/preview?template=${t}&headline=${h}&sub_badge=${sb}&b1=${b1}&b2=${b2}&b3=${b3}&cta=${cta}`;
 
-    function buildUrl(path) {
-      const t = $("template").value;
-      const params = new URLSearchParams();
+  const pngUrl =
+    `/png?template=${t}&headline=${h}&sub_badge=${sb}&b1=${b1}&b2=${b2}&b3=${b3}&cta=${cta}`;
 
-      if (t === "authority") params.set("template", "authority");
-
-      const headline = $("headline").value.trim();
-      const cta = $("cta").value.trim();
-      if (headline) params.set("headline", headline);
-      if (cta) params.set("cta", cta);
-
-      if (t === "offer_direct") {
-        const sub_badge = $("sub_badge").value.trim();
-        const b1 = $("b1").value.trim();
-        const b2 = $("b2").value.trim();
-        const b3 = $("b3").value.trim();
-        if (sub_badge) params.set("sub_badge", sub_badge);
-        if (b1) params.set("b1", b1);
-        if (b2) params.set("b2", b2);
-        if (b3) params.set("b3", b3);
-      } else {
-        const brand = $("brand").value.trim();
-        const badge = $("badge").value.trim();
-        const p1 = $("p1").value.trim();
-        const p1l = $("p1l").value.trim();
-        const p2 = $("p2").value.trim();
-        const p2l = $("p2l").value.trim();
-        const p3 = $("p3").value.trim();
-        const p3l = $("p3l").value.trim();
-        const fl = $("fl").value.trim();
-        const fr = $("fr").value.trim();
-
-        if (brand) params.set("brand", brand);
-        if (badge) params.set("badge", badge);
-        if (p1) params.set("p1", p1);
-        if (p1l) params.set("p1l", p1l);
-        if (p2) params.set("p2", p2);
-        if (p2l) params.set("p2l", p2l);
-        if (p3) params.set("p3", p3);
-        if (p3l) params.set("p3l", p3l);
-        if (fl) params.set("fl", fl);
-        if (fr) params.set("fr", fr);
-      }
-
-      const qs = params.toString();
-      return qs ? `${path}?${qs}` : path;
-    }
-
-    $("template").addEventListener("change", toggleFields);
-    toggleFields();
-
-    $("btnPreview").addEventListener("click", () => {
-      window.open(buildUrl("/preview"), "_blank");
-    });
-
-    $("btnPng").addEventListener("click", () => {
-      window.open(buildUrl("/png"), "_blank");
-    });
-  </script>
+  document.getElementById("preview").src = previewUrl;
+  document.getElementById("download").href = pngUrl;
+  document.getElementById("open").href = previewUrl;
+}
+</script>
 </body>
 </html>
